@@ -1,0 +1,47 @@
+{
+  "timestamp": "2026-11-25T14:29:28.440324+00:00",
+  "status": "success",
+  "records": {
+    "customers": 10000,
+    "products": 1000,
+    "orders": 100000,
+    "order_items": 249775,
+    "payments": 100000
+  },
+  "total_records": 460775,
+  "execution_seconds": 24.642,
+  "records_per_second": 18699,
+  "stage_timings": {
+    "extract": 0.276,
+    "validate": 1.577,
+    "transform": 1.178,
+    "load": 21.611
+  },
+  "raw_size_bytes": 17340105,
+  "parquet_size_bytes": 7432619,
+  "storage_reduction_percent": 57.14,
+  "data_quality": {
+    "status": "passed",
+    "checks": [
+      "customers: schema and values",
+      "products: schema and values",
+      "orders: schema and values",
+      "order_items: schema and values",
+      "payments: schema and values",
+      "orders.customer_id: foreign key",
+      "order_items.order_id: foreign key",
+      "order_items.product_id: foreign key",
+      "payments.order_id: foreign key",
+      "Order totals reconciled",
+      "Payment amounts reconciled"
+    ],
+    "records": {
+      "customers": 10000,
+      "products": 1000,
+      "orders": 100000,
+      "order_items": 249775,
+      "payments": 100000
+    },
+    "total_records": 460775
+  }
+}

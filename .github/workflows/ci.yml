@@ -1,0 +1,98 @@
+
+name: DataFlow Nexus CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Data Engineering Pipeline Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip check
+
+      - name: Create CI environment
+        run: |
+          cat > .env <<EOF
+          POSTGRES_USER=nexus_admin
+          POSTGRES_PASSWORD=ci_test_password
+          POSTGRES_DB=dataflow_nexus
+          POSTGRES_HOST=localhost
+          POSTGRES_PORT=5433
+          EOF
+
+      - name: Start PostgreSQL
+        run: |
+          docker compose up -d --wait
+
+      - name: Verify database
+        run: |
+          python -m scripts.check_database
+
+      - name: Run code quality checks
+        run: |
+          python -m ruff check ingestion processing configs scripts tests
+
+      - name: Generate synthetic test data
+        run: |
+          python -m scripts.generate_data \
+            --customers 100 \
+            --products 50 \
+            --orders 1000 \
+            --seed 42
+
+      - name: Execute ETL pipeline
+        run: |
+          python -m scripts.run_etl
+
+      - name: Run automated tests
+        run: |
+          python -m pytest \
+            --cov=ingestion \
+            --cov=processing \
+            --cov=configs \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-fail-under=80
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dataflow-nexus-test-reports
+          path: |
+            coverage.xml
+            htmlcov/
+            logs/etl_report.json
+          retention-days: 14
+
+      - name: PostgreSQL logs
+        if: failure()
+        run: docker compose logs postgres
+
+      - name: Stop CI services
+        if: always()
+        run: docker compose down -v
