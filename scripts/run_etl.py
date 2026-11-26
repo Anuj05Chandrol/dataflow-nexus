@@ -13,6 +13,7 @@ from processing.transformations.transformer import (
     transform_datasets,
 )
 from processing.validation.quality import validate_datasets
+from scripts.sync_data_lake import sync_data_lake
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
@@ -144,6 +145,18 @@ def main():
 
     print(f"Report: {report_path}")
     print("=" * 60)
+
+    storage_report = sync_data_lake()
+
+    print("\nOBJECT STORAGE SYNCHRONIZATION")
+
+    print(f"Uploaded files: {storage_report['total_files']}")
+
+    print(f"Verified files: {storage_report['verified_files']}")
+
+    print(
+        f"Storage synchronization time: {storage_report['execution_seconds']} seconds"
+    )
 
 
 if __name__ == "__main__":
