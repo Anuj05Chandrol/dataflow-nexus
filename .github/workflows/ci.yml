@@ -1,11 +1,15 @@
-
 name: DataFlow Nexus CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - "feature/**"
+
   pull_request:
-    branches: [main]
+    branches:
+      - main
+
   workflow_dispatch:
 
 permissions:
@@ -13,9 +17,11 @@ permissions:
 
 jobs:
   test:
-    name: Data Engineering Pipeline Tests
+    name: Data Engineering Platform Tests
+
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -36,24 +42,62 @@ jobs:
       - name: Create CI environment
         run: |
           cat > .env <<EOF
+          PROJECT_NAME=DataFlow Nexus
+          APP_ENV=testing
+
           POSTGRES_USER=nexus_admin
           POSTGRES_PASSWORD=ci_test_password
           POSTGRES_DB=dataflow_nexus
           POSTGRES_HOST=localhost
           POSTGRES_PORT=5433
+
+          MINIO_ENDPOINT=http://localhost:9000
+          MINIO_ROOT_USER=nexus_storage_admin
+          MINIO_ROOT_PASSWORD=ci_storage_test_password
+          MINIO_API_PORT=9000
+          MINIO_CONSOLE_PORT=9001
+          MINIO_REGION=us-east-1
+
+          MINIO_BRONZE_BUCKET=nexus-bronze
+          MINIO_SILVER_BUCKET=nexus-silver
+          MINIO_GOLD_BUCKET=nexus-gold
+
+          DATA_RECORDS=1000
+          RANDOM_SEED=42
           EOF
 
-      - name: Start PostgreSQL
+      - name: Validate Docker configuration
+        run: docker compose config --quiet
+
+      - name: Start infrastructure
         run: |
           docker compose up -d --wait
+          docker compose ps
 
-      - name: Verify database
+      - name: Wait for MinIO readiness
         run: |
-          python -m scripts.check_database
+          for attempt in $(seq 1 30); do
+            if curl -fsS \
+              http://localhost:9000/minio/health/ready; then
+              echo "MinIO is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "MinIO readiness check failed"
+          exit 1
+
+      - name: Verify PostgreSQL
+        run: python -m scripts.check_database
+
+      - name: Initialize object storage
+        run: python -m scripts.check_object_storage
 
       - name: Run code quality checks
         run: |
-          python -m ruff check ingestion processing configs scripts tests
+          python -m ruff check \
+            configs storage ingestion processing scripts tests
 
       - name: Generate synthetic test data
         run: |
@@ -63,9 +107,25 @@ jobs:
             --orders 1000 \
             --seed 42
 
-      - name: Execute ETL pipeline
+      - name: Execute complete ETL pipeline
+        run: python -m scripts.run_etl
+
+      - name: Verify object storage report
         run: |
-          python -m scripts.run_etl
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("logs/object_storage_report.json").read_text()
+          )
+
+          assert report["status"] == "success"
+          assert report["total_files"] == 10
+          assert report["verified_files"] == 10
+
+          print("All ten objects verified.")
+          PY
 
       - name: Run automated tests
         run: |
@@ -73,12 +133,13 @@ jobs:
             --cov=ingestion \
             --cov=processing \
             --cov=configs \
+            --cov=storage \
             --cov-report=term-missing \
             --cov-report=xml \
             --cov-report=html \
-            --cov-fail-under=80
+            --cov-fail-under=90
 
-      - name: Upload test reports
+      - name: Upload engineering reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -87,12 +148,13 @@ jobs:
             coverage.xml
             htmlcov/
             logs/etl_report.json
+            logs/object_storage_report.json
           retention-days: 14
 
-      - name: PostgreSQL logs
+      - name: Infrastructure logs
         if: failure()
-        run: docker compose logs postgres
+        run: docker compose logs
 
-      - name: Stop CI services
+      - name: Stop CI infrastructure
         if: always()
         run: docker compose down -v

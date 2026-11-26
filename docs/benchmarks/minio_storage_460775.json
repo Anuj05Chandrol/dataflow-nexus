@@ -1,0 +1,127 @@
+{
+    "timestamp": "2026-11-26T11:28:26.345418+00:00",
+    "status": "success",
+    "layers": {
+        "bronze": {
+            "bucket": "nexus-bronze",
+            "files": [
+                {
+                    "bucket": "nexus-bronze",
+                    "object_key": "customers.csv",
+                    "size_bytes": 782285,
+                    "sha256": "2203226bf564b749e18d24ed4f20c66c29514efe265f7dff979c4026b8f5ebcc",
+                    "upload_seconds": 2.0731,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.0953
+                },
+                {
+                    "bucket": "nexus-bronze",
+                    "object_key": "products.csv",
+                    "size_bytes": 49782,
+                    "sha256": "a622fa798e8d3c753416164c1f52e9f9257a724da25f31a0800514f8b5d7952d",
+                    "upload_seconds": 2.0924,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.0808
+                },
+                {
+                    "bucket": "nexus-bronze",
+                    "object_key": "orders.csv",
+                    "size_bytes": 5605579,
+                    "sha256": "03dbf658f12b2b0a63aa12b2005b2540559ab668b95856de3305cb0f7bc69b53",
+                    "upload_seconds": 2.1757,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.1231
+                },
+                {
+                    "bucket": "nexus-bronze",
+                    "object_key": "order_items.csv",
+                    "size_bytes": 6809202,
+                    "sha256": "8ff74c87270ff09c91d11164886610f5655c0bcaa3ff1106726ed61aed3968ba",
+                    "upload_seconds": 2.2561,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.1215
+                },
+                {
+                    "bucket": "nexus-bronze",
+                    "object_key": "payments.csv",
+                    "size_bytes": 4093257,
+                    "sha256": "a63ac8d49acdc4aa8d0ca701a834fb96f392f1c3b950279b64c4c869fe75fedb",
+                    "upload_seconds": 2.1155,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.1047
+                }
+            ],
+            "total_files": 5,
+            "total_bytes": 17340105,
+            "execution_seconds": 21.4012
+        },
+        "silver": {
+            "bucket": "nexus-silver",
+            "files": [
+                {
+                    "bucket": "nexus-silver",
+                    "object_key": "customers.parquet",
+                    "size_bytes": 255531,
+                    "sha256": "ea2864cacf78b36ae6f39358b0602804319ce9d0439cf68c2aa58a0eefffb1a8",
+                    "upload_seconds": 2.0877,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.0775
+                },
+                {
+                    "bucket": "nexus-silver",
+                    "object_key": "products.parquet",
+                    "size_bytes": 25691,
+                    "sha256": "6c55be38af013adfb9bec389329d7775ae3bec9cf01e2accd63380257928e153",
+                    "upload_seconds": 2.0583,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.0816
+                },
+                {
+                    "bucket": "nexus-silver",
+                    "object_key": "orders.parquet",
+                    "size_bytes": 2446783,
+                    "sha256": "5f8fc0445e553c82b3081b907010795dd6a9cfc6fd1424dd938d6f30e2e482ab",
+                    "upload_seconds": 2.1105,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.0726
+                },
+                {
+                    "bucket": "nexus-silver",
+                    "object_key": "order_items.parquet",
+                    "size_bytes": 2820303,
+                    "sha256": "680b4f702c04163d12b47560dfbc4b02582deab6d4ddc2894ec512f00d1291d9",
+                    "upload_seconds": 2.1016,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.1267
+                },
+                {
+                    "bucket": "nexus-silver",
+                    "object_key": "payments.parquet",
+                    "size_bytes": 1884311,
+                    "sha256": "5cfd9ee93e38edff7010ae5ed1f2e71521ca71bf712e26ffb1f590bd5bbb565d",
+                    "upload_seconds": 2.1508,
+                    "status": "uploaded",
+                    "integrity_verified": true,
+                    "download_seconds": 2.0992
+                }
+            ],
+            "total_files": 5,
+            "total_bytes": 7432619,
+            "execution_seconds": 21.0461
+        }
+    },
+    "total_files": 10,
+    "total_bytes": 24772724,
+    "verified_files": 10,
+    "execution_seconds": 44.6597,
+    "total_size_mib": 23.6251
+}
