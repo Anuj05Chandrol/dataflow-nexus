@@ -31,7 +31,7 @@
 
 ## Overview
 
-DataFlow Nexus is an end-to-end data aengineering portfolio
+DataFlow Nexus is an end-to-end data angineering portfolio
 project that simulates a realistic e-commerce data ecosystem.
 
 The platform implements a complete batch ETL pipeline,
